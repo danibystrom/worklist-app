@@ -5,7 +5,7 @@
 	xmlns:semantic="sap.f.semantic">
 
 	<semantic:SemanticPage
-		id="worklistPage"
+		id="page"
 		headerPinnable="false"
 		toggleHeaderOnTitleClick="false"
 		showFooter="true">
@@ -144,17 +144,14 @@
 				</content>
 			</IconTabBar>
 		</semantic:headerContent>
-
 		<semantic:sendEmailAction>
 			<semantic:SendEmailAction id="shareEmail" press=".onShareEmailPress"/>
 		</semantic:sendEmailAction>
 		<semantic:positiveAction>
-		  <semantic:PositiveAction text="{i18n>TableProductsReorder}" press=".onUpdateStockObjects"/>
-	 </semantic:positiveAction>
-	 <semantic:negativeAction>
-		  <semantic:NegativeAction text="{i18n>TablePorductsUnlist}" press=".onUnlistObjects"/>
-	 </semantic:negativeAction>
-
+			<semantic:PositiveAction text="{i18n>TableProductsReorder}" press=".onUpdateStockObjects"/>
+		</semantic:positiveAction>
+		<semantic:negativeAction>
+			<semantic:NegativeAction text="{i18n>TablePorductsUnlist}" press=".onUnlistObjects"/>
+		</semantic:negativeAction>
 	</semantic:SemanticPage>
-
 </mvc:View>
