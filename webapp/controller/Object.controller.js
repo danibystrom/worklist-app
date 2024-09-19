@@ -2,12 +2,20 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/core/routing/History",
-	"mycompany/myapp/MyWorklistApp/model/formatter"
+	"mycompany/myapp/MyWorklistApp/model/formatter",
+	"sap/ui/core/date/UI5Date",
+	"sap/ui/core/format/DateFormat",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
 ], function (
 	BaseController,
 	JSONModel,
 	History,
-	formatter
+	formatter, 
+	UI5Date, 
+	DateFormat, 
+	Filter, 
+	FilterOperator
 ) {
 	"use strict";
 
@@ -23,14 +31,14 @@ sap.ui.define([
 		 * Called when the worklist controller is instantiated.
 		 * @public
 		 */
-		onInit : function () {
+		onInit: function () {
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var iOriginalBusyDelay,
 				oViewModel = new JSONModel({
-					busy : true,
-					delay : 0
+					busy: true,
+					delay: 0
 				});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -39,9 +47,9 @@ sap.ui.define([
 			iOriginalBusyDelay = this.getView().getBusyIndicatorDelay();
 			this.setModel(oViewModel, "objectView");
 			this.getOwnerComponent().getModel().metadataLoaded().then(function () {
-					// Restore original busy indicator delay for the object view
-					oViewModel.setProperty("/delay", iOriginalBusyDelay);
-				}
+				// Restore original busy indicator delay for the object view
+				oViewModel.setProperty("/delay", iOriginalBusyDelay);
+			}
 			);
 		},
 
@@ -56,7 +64,7 @@ sap.ui.define([
 		 * If not, it will replace the current entry of the browser history with the worklist route.
 		 * @public
 		 */
-		onNavBack : function() {
+		onNavBack: function () {
 			var sPreviousHash = History.getInstance().getPreviousHash();
 
 			if (sPreviousHash !== undefined) {
@@ -76,11 +84,11 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
-		_onObjectMatched : function (oEvent) {
-			var sObjectId =  oEvent.getParameter("arguments").objectId;
-			this.getModel().metadataLoaded().then( function() {
+		_onObjectMatched: function (oEvent) {
+			var sObjectId = oEvent.getParameter("arguments").objectId;
+			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("Products", {
-					ProductID :  sObjectId
+					ProductID: sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -92,7 +100,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound
 		 * @private
 		 */
-		_bindView : function (sObjectPath) {
+		_bindView: function (sObjectPath) {
 			var oViewModel = this.getModel("objectView"),
 				oDataModel = this.getModel();
 
@@ -116,7 +124,7 @@ sap.ui.define([
 			});
 		},
 
-		_onBindingChange : function () {
+		_onBindingChange: function () {
 			var oView = this.getView(),
 				oViewModel = this.getModel("objectView"),
 				oElementBinding = oView.getElementBinding();
@@ -134,11 +142,38 @@ sap.ui.define([
 
 			oViewModel.setProperty("/busy", false);
 			oViewModel.setProperty("/shareSendEmailSubject",
-			oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
+				oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
 			oViewModel.setProperty("/shareSendEmailMessage",
-			oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-		}
+				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 
-	});
-
-});
+			// Update the comments in the list
+			var oList = this.byId("idCommentsList");
+			var oBinding = oList.getBinding("items");
+			oBinding.filter(new Filter("productID", FilterOperator.EQ, sObjectId));
+		 },
+		 /**
+		 * Updates the model with the user comments on Products.
+		 * @function
+		 * @param {sap.ui.base.Event} oEvent object of the user input
+		 */
+		 onPost: function (oEvent) {
+			var oFormat = DateFormat.getDateTimeInstance({style: "medium"});
+			var sDate = oFormat.format(UI5Date.getInstance());
+			var oObject = this.getView().getBindingContext().getObject();
+			var sValue = oEvent.getParameter("value");
+			var oEntry = {
+				productID: oObject.ProductID,
+				type: "Comment",
+				date: sDate,
+				comment: sValue
+			};        
+			// update model
+			var oFeedbackModel = this.getModel("productFeedback");
+			var aEntries = oFeedbackModel.getData().productComments;
+			aEntries.push(oEntry);
+			oFeedbackModel.setData({
+			   productComments : aEntries
+			});
+		 }
+	  });
+   });
