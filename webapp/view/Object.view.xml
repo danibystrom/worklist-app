@@ -11,10 +11,13 @@
 		headerPinnable="false"
 		toggleHeaderOnTitleClick="false"
 		busy="{objectView>/busy}"
-		busyIndicatorDelay="{objectView>/delay}">
+		busyIndicatorDelay="{objectView>/delay}"> 
+		
+		
 		<semantic:titleHeading>
 			<Title text="{ProductName}" />
 		</semantic:titleHeading>
+
 		<semantic:headerContent>
 			<FlexBox
 				alignItems="Start"
@@ -111,8 +114,22 @@
 						</List>
 					</content>
 				</Panel>
+				<Panel
+				backgroundDesign="Transparent">
+				<content>
+				<Button text="Back"
+						press=".onNavBack" type="Transparent"
+						ariaDescribedBy="defaultButtonDescription genericButtonDescription">
+					<layoutData>
+						<FlexItemData growFactor="1" />
+					</layoutData>
+				</Button>
+				
+				</content>
+				</Panel>
 			</l:VerticalLayout>
 		</semantic:content>
+			
 		<semantic:sendEmailAction>
 			<semantic:SendEmailAction id="shareEmail" press=".onShareEmailPress"/>
 		</semantic:sendEmailAction>
