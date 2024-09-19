@@ -231,6 +231,7 @@ sap.ui.define([
 		 * @param {number} iTotalRequests the number of all requests sent
 		 * @private
 		 */
+
 		_handleUnlistActionResult: function (sProductId, bSuccess, iRequestNumber, iTotalRequests) {
 			// we could create a counter for successful and one for failed requests
 			// however, we just assume that every single request was successful and display a success message once
@@ -247,6 +248,7 @@ sap.ui.define([
 		 * @param {number} iTotalRequests the number of all requests sent
 		 * @private
 		 */
+
 		_handleReorderActionResult: function (sProductId, bSuccess, iRequestNumber, iTotalRequests) {
 			// we could create a counter for successful and one for failed requests
 			// however, we just assume that every single request was successful and display a success message once
@@ -260,6 +262,7 @@ sap.ui.define([
 		 * product from the (local) model.
 		 * @public
 		 */
+
 		onUnlistObjects: function () {
 			var aSelectedProducts, i, sPath, oProduct, oProductId;
 
@@ -278,7 +281,6 @@ sap.ui.define([
 				this._showErrorMessage(this.getModel("i18n").getResourceBundle().getText("TableSelectProduct"));
 			}
 		},
-
 
 		/**
 		 * Event handler for the reorder button. Will reorder the
